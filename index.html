@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой планировщик путешествий</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        @media (min-width: 768px) {
+            .card {
+                flex-direction: row;
+            }
+        }
+        .card-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        @media (min-width: 768px) {
+            .card-image {
+                width: 40%;
+                height: auto;
+            }
+        }
+        .card-content {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card-content h2 {
+            margin-top: 0;
+            color: #34495e;
+        }
+        .card-content p {
+            line-height: 1.6;
+        }
+        .button {
+            display: inline-block;
+            background-color: #0071c2;
+            color: #ffffff;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #005a99;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Мой планировщик поездки по Прибалтике и Центральной Европе</h1>
+
+        <div class="card">
+            <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/184166713.jpg?k=76288c07e86ee220b8fa7cb5be50728f720680172ca9e193b8168f99a00a1464&o=" alt="Viesu nams Gungas в Латвии" class="card-image">
+            <div class="card-content">
+                <div>
+                    <h2>Остановка 1: Viesu nams Gungas, Латвия</h2>
+                    <p><strong>Даты:</strong> 11 - 12 октября 2025</p>
+                    <p>Красивый гостевой дом в живописном месте на берегу озера.</p>
+                </div>
+                <a href="https://www.booking.com/hotel/lv/viesu-nams-gungas.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-11&checkout=2025-10-12&dest_id=6274&dest_type=region&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-75-1&srpvid=725b415abe140530&srepoch=1754818627&matching_block_id=82554019_351506063_2_0_0&atlas_src=sr_iw_title" class="button" target="_blank">Посмотреть на Booking.com</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/362369515.jpg?k=ccd1df086b44444ed8be601a2e83d6f989bbb8e2f619056cf739574362c86213&o=" alt="Gazdų Vandens Malūnas в Литве" class="card-image">
+            <div class="card-content">
+                <div>
+                    <h2>Остановка 2: Gazdų Vandens Malūnas, Литва</h2>
+                    <p><strong>Даты:</strong> 11 - 12 октября 2025</p>
+                    <p>Уникальное историческое место в прекрасно отреставрированной водяной мельнице.</p>
+                </div>
+                <a href="https://www.booking.com/hotel/lt/gazdu-vandens-malunas.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-11&checkout=2025-10-12&dest_id=6274&dest_type=region&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-75-1&srpvid=725b415abe140530&srepoch=1754818807&matching_block_id=268885702_394847627_2_2_0&atlas_src=sr_iw_title" class="button" target="_blank">Посмотреть на Booking.com</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/342566914.jpg?k=08fc8b615d9be492c59000086380701045de73ffe91dbcf78e2dca3fdbd3cdda&o=" alt="Holiday Inn Warsaw - Józefów" class="card-image">
+            <div class="card-content">
+                <div>
+                    <h2>Остановка 3: Holiday Inn Warsaw - Józefów, Польша</h2>
+                    <p><strong>Даты:</strong> 12 - 13 октября 2025</p>
+                    <p>Современный отель с полем для гольфа, спа и широким спектром услуг недалеко от Варшавы.</p>
+                </div>
+                <a href="https://www.booking.com/hotel/pl/holiday-inn-warsaw-jozefow.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-12&checkout=2025-10-13&dest_id=-534433&dest_type=city&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-" class="button" target="_blank">Посмотреть на Booking.com</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/167831936.jpg?k=255fbf44e653847ccaba2f357c51e93169c896a8fab893bb7491b7c4d4c6559f&o=" alt="Kopec 67 в Чехии" class="card-image">
+            <div class="card-content">
+                <div>
+                    <h2>Остановка 4: Kopec 67, Чехия</h2>
+                    <p><strong>Даты:</strong> 12 - 13 октября 2025</p>
+                    <p>Очаровательные и уютные апартаменты в загородной местности Чехии.</p>
+                </div>
+                <a href="https://www.booking.com/hotel/cz/kopec-67.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-12&checkout=2025-10-13&dest_id=-534433&dest_type=city&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-80-1&srpvid=29064693ea42049d&srepoch=1754822770&matching_block_id=423395201_246685400_2_2_0&atlas_src=sr_iw_title#map_opened-hotel_sidebar_static_map_capla" class="button" target="_blank">Посмотреть на Booking.com</a>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
