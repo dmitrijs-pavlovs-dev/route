@@ -3,18 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой планировщик путешествий</title>
+    <title>Маршрут: Таллин — Donaualtarm Greifenstein</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #f4f7f6;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             color: #333;
         }
+        header {
+            background: linear-gradient(135deg, #0071c2, #005a99);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        .full-bleed {
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            margin-right: calc(50% - 50vw);
+        }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
+            padding: 20px;
         }
         h1 {
             text-align: center;
@@ -68,24 +85,84 @@
         .button {
             display: inline-block;
             background-color: #0071c2;
-            color: #ffffff;
+            color: #ffffff !important;
             padding: 12px 20px;
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
             text-align: center;
             margin-top: 15px;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.08s ease-out, box-shadow 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
+        .button:visited, .button:hover, .button:focus { color: #ffffff !important; text-decoration: none; }
         .button:hover {
             background-color: #005a99;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
+        .button:active { transform: translateY(1px); }
+        .button-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 10px 0 25px;
+        }
+        .button--google { background-color: #1a73e8; }
+        .button--google:hover { background-color: #1557b0; }
+        .button--waze { background-color: #05a5f0; }
+        .button--waze:hover { background-color: #048bd0; }
+        .button--small { padding: 8px 14px; font-weight: 600; }
+        .legs-container { margin: 10px 0 30px; }
+        .legs-container h2 { color: #34495e; margin: 10px 0 12px; font-size: 1.1rem; text-align: center; }
+        #legs-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        @media (min-width: 640px) { #legs-list { grid-template-columns: 1fr 1fr; } }
+        .leg-item { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .leg-text { color: #2c3e50; font-size: 0.95rem; }
+        .leg-buttons { display: flex; gap: 8px; }
+        .map-container {
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        #route-map {
+            width: 100%;
+            height: 450px;
+        }
+        /* Popup styling */
+        .leaflet-popup-content { margin: 8px 12px; }
+        .popup-card { display: flex; gap: 12px; align-items: flex-start; }
+        .popup-image { width: 96px; height: 72px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+        .popup-body { min-width: 180px; }
+        .popup-title { margin: 0 0 6px; font-size: 0.95rem; color: #2c3e50; font-weight: 700; }
+        .popup-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .leaflet-popup-content a.button { margin-top: 0; }
     </style>
 </head>
 <body>
 
+    <header>
+        <h1>Путешествие: Таллин → Donaualtarm Greifenstein</h1>
+        <p>10–14 октября 2025</p>
+    </header>
+
+    <div class="full-bleed">
+        <div class="map-container">
+            <div id="route-map" aria-label="Карта маршрута: Таллин — Donaualtarm Greifenstein"></div>
+        </div>
+    </div>
+
     <div class="container">
-        <h1>Мой планировщик поездки по Прибалтике и Центральной Европе</h1>
+        <div class="button-row">
+            <a href="https://www.google.com/maps/dir/Tallinn/Gungas,+LV-2164,+Latvia/Gazd%C5%B3+Vandens+Mal%C5%ABnas,+Gazdai+4,+Sangr%C5%ABdos+sen.,+Kalvarijos+sav.,+38131+Gazdai,+Lithuania/Holiday+Inn+Resort+Warsaw+-+Jozefow+by+IHG,+Telimeny+1,+05-420+J%C3%B3zef%C3%B3w,+Poland/Kopec+67,+742+66+%C5%A0tramberk,+Czechia/''/@48.3500838,16.0700298,45073m/data=!3m1!1e3!4m38!4m37!1m5!1m1!1s0x46929499df5616bf:0x400b36d18fc6270!2m2!1d24.7535747!2d59.4369608!1m5!1m1!1s0x46eeb6600ca3c7c7:0xf5449f88c040efed!2m2!1d24.3477738!2d57.1328508!1m5!1m1!1s0x46e0dfa67bbc7cc9:0x4a9890b233027a6a!2m2!1d23.2481006!2d54.3363965!1m5!1m1!1s0x471ed4bd481bf34f:0xa3734a7a7553f712!2m2!1d21.234515!2d52.1227953!1m5!1m1!1s0x4713ed45ea550f43:0x2538c99144c095ac!2m2!1d18.1194894!2d49.5919184!1m5!1m1!1s0x476d0d3babc24ba9:0xbf16a586fa052bfb!2m2!1d16.2207482!2d48.34603!3e0?entry=ttu&amp;g_ep=EgoyMDI1MDgwNi4wIKXMDSoASAFQAw%3D%3D" class="button button--google" target="_blank" rel="noopener noreferrer">Открыть маршрут в Google Maps</a>
+            <a href="https://ul.waze.com/ul?ll=48.34603%2C16.2207482&navigate=yes" class="button button--waze" target="_blank" rel="noopener noreferrer">Открыть маршрут в Waze</a>
+        </div>
+
+        <div class="legs-container">
+            <h2>Этапы маршрута (Waze, от вашего текущего местоположения)</h2>
+            <div id="legs-list"></div>
+        </div>
 
         <div class="card">
             <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/184166713.jpg?k=76288c07e86ee220b8fa7cb5be50728f720680172ca9e193b8168f99a00a1464&o=" alt="Viesu nams Gungas в Латвии" class="card-image">
@@ -96,7 +173,7 @@
                     <p><strong>Даты:</strong> 10 - 11 октября 2025 (Пятница - Суббота)</p>
                     <p>Красивый гостевой дом в живописном месте на берегу озера.</p>
                 </div>
-                <a href="https://www.booking.com/hotel/lv/viesu-nams-gungas.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-10&checkout=2025-10-11&dest_id=6274&dest_type=region&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-75-1" class="button" target="_blank">Посмотреть на Booking.com</a>
+                <a href="https://www.booking.com/hotel/lv/viesu-nams-gungas.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-10&checkout=2025-10-11&dest_id=6274&dest_type=region&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-75-1" class="button" target="_blank" rel="noopener noreferrer">Посмотреть на Booking.com</a>
             </div>
         </div>
 
@@ -109,7 +186,7 @@
                     <p><strong>Даты:</strong> 11 - 12 октября 2025 (Суббота - Воскресенье)</p>
                     <p>Уникальное историческое место в прекрасно отреставрированной водяной мельнице.</p>
                 </div>
-                <a href="https://www.booking.com/hotel/lt/gazdu-vandens-malunas.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-11&checkout=2025-10-12&dest_id=6274&dest_type=region&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-75-1" class="button" target="_blank">Посмотреть на Booking.com</a>
+                <a href="https://www.booking.com/hotel/lt/gazdu-vandens-malunas.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-11&checkout=2025-10-12&dest_id=6274&dest_type=region&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-75-1" class="button" target="_blank" rel="noopener noreferrer">Посмотреть на Booking.com</a>
             </div>
         </div>
 
@@ -122,7 +199,7 @@
                     <p><strong>Даты:</strong> 12 - 13 октября 2025 (Воскресенье - Понедельник)</p>
                     <p>Современный отель с полем для гольфа, спа и широким спектром услуг недалеко от Варшавы.</p>
                 </div>
-                <a href="https://www.booking.com/hotel/pl/holiday-inn-warsaw-jozefow.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-12&checkout=2025-10-13&dest_id=-534433&dest_type=city&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-" class="button" target="_blank">Посмотреть на Booking.com</a>
+                <a href="https://www.booking.com/hotel/pl/holiday-inn-warsaw-jozefow.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-12&checkout=2025-10-13&dest_id=-534433&dest_type=city&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-" class="button" target="_blank" rel="noopener noreferrer">Посмотреть на Booking.com</a>
             </div>
         </div>
 
@@ -135,11 +212,117 @@
                     <p><strong>Даты:</strong> 13 - 14 октября 2025 (Понедельник - Вторник)</p>
                     <p>Очаровательные и уютные апартаменты в загородной местности Чехии.</p>
                 </div>
-                <a href="https://www.booking.com/hotel/cz/kopec-67.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-13&checkout=2025-10-14&dest_id=-534433&dest_type=city&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-80-1" class="button" target="_blank">Посмотреть на Booking.com</a>
+                <a href="https://www.booking.com/hotel/cz/kopec-67.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-13&checkout=2025-10-14&dest_id=-534433&dest_type=city&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-80-1" class="button" target="_blank" rel="noopener noreferrer">Посмотреть на Booking.com</a>
             </div>
         </div>
 
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script>
+    (function() {
+        var stops = [
+            { 
+                name: 'Tallinn, Estonia', 
+                coords: [59.4369608, 24.7535747]
+            },
+            { 
+                name: 'Viesu nams Gungas, Latvia', 
+                coords: [57.1328508, 24.3477738],
+                img: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/184166713.jpg?k=76288c07e86ee220b8fa7cb5be50728f720680172ca9e193b8168f99a00a1464&o=',
+                booking: 'https://www.booking.com/hotel/lv/viesu-nams-gungas.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-10&checkout=2025-10-11&dest_id=6274&dest_type=region&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-75-1'
+            },
+            { 
+                name: 'Gazdų Vandens Malūnas, Lithuania', 
+                coords: [54.3363965, 23.2481006],
+                img: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/113442731.jpg?k=5c394fe9ef275946dc8090939d9ea6217e8749b08333c46091a06111f6ea5ee5&o=',
+                booking: 'https://www.booking.com/hotel/lt/gazdu-vandens-malunas.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-11&checkout=2025-10-12&dest_id=6274&dest_type=region&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-75-1'
+            },
+            { 
+                name: 'Holiday Inn Resort Warsaw - Jozefow by IHG, Józefów, Poland', 
+                coords: [52.1227953, 21.234515],
+                img: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/342566914.jpg?k=08fc8b615d9be492c59000086380701045de73ffe91dbcf78e2dca3fdbd3cdda&o=',
+                booking: 'https://www.booking.com/hotel/pl/holiday-inn-warsaw-jozefow.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-12&checkout=2025-10-13&dest_id=-534433&dest_type=city&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-'
+            },
+            { 
+                name: 'Apartmány Kopec 67, Štramberk, Czechia', 
+                coords: [49.5919184, 18.1194894],
+                img: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/167831936.jpg?k=255fbf44e653847ccaba2f357c51e93169c896a8fab893bb7491b7c4d4c6559f&o=',
+                booking: 'https://www.booking.com/hotel/cz/kopec-67.en-gb.html?label=gen173nr-10CAEoggI46AdIM1gEaEKIAQGYATO4AQfIAQzYAQPoAQH4AQGIAgGoAgG4AqvG4cQGwAIB0gIkNmFiYTgxN2YtM2FlZS00ZTcyLWI5ZGUtNGRkM2RmNjhmYjg32AIB4AIB&sid=8022fce0d149ec298964c69a2af3c3c5&aid=304142&ucfs=1&checkin=2025-10-13&checkout=2025-10-14&dest_id=-534433&dest_type=city&group_adults=2&no_rooms=1&group_children=0&nflt=oos%3D1%3Bhotelfacility%3D4%3Bprice%3DEUR-min-80-1'
+            },
+            { 
+                name: 'Donaualtarm Greifenstein, 3422 St. Andrä-Wördern, Austria', 
+                coords: [48.34603, 16.2207482]
+            }
+        ];
+
+        var map = L.map('route-map', { scrollWheelZoom: false });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var latlngs = stops.map(function(s) { return s.coords; });
+        var bounds = L.latLngBounds(latlngs);
+        map.fitBounds(bounds, { padding: [20, 20] });
+
+        var polyline = L.polyline(latlngs, { color: '#0071c2', weight: 4, opacity: 0.9 }).addTo(map);
+
+        function buildPopup(stop, index) {
+            var imgHtml = stop.img ? '<img class="popup-image" src="' + stop.img + '" alt="' + stop.name.replace(/"/g, '&quot;') + '">': '';
+            var mapsHref = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(stop.coords[0] + ',' + stop.coords[1]);
+            var mapsBtn = '<a class="button button--google button--small" target="_blank" rel="noopener noreferrer" href="' + mapsHref + '">Google</a>';
+            var bookingBtn = stop.booking ? '<a class="button button--small" target="_blank" rel="noopener noreferrer" href="' + stop.booking + '">Booking</a>' : '';
+            var actions = '<div class="popup-actions">' + mapsBtn + (bookingBtn ? bookingBtn : '') + '</div>';
+            return '<div class="popup-card">' + imgHtml + '<div class="popup-body"><div class="popup-title">' + (index + 1) + '. ' + stop.name + '</div>' + actions + '</div></div>';
+        }
+
+        stops.forEach(function(stop, index) {
+            var marker = L.marker(stop.coords).addTo(map);
+            marker.bindPopup(buildPopup(stop, index));
+        });
+
+        // Build per-leg Waze links from current location to each next stop
+        var legsRoot = document.getElementById('legs-list');
+        if (legsRoot) {
+            for (var i = 1; i < stops.length; i++) {
+                var fromName = i === 1 ? 'Текущая позиция' : stops[i-1].name;
+                var toName = stops[i].name;
+                var to = stops[i].coords; // [lat, lng]
+                var wazeHref = 'https://ul.waze.com/ul?ll=' + encodeURIComponent(to[0] + ',' + to[1]) + '&navigate=yes';
+
+                var item = document.createElement('div');
+                item.className = 'leg-item';
+                var text = document.createElement('div');
+                text.className = 'leg-text';
+                text.textContent = (i) + '. ' + fromName + ' → ' + toName;
+                var btns = document.createElement('div');
+                btns.className = 'leg-buttons';
+
+                var wazeBtn = document.createElement('a');
+                wazeBtn.className = 'button button--waze button--small';
+                wazeBtn.target = '_blank';
+                wazeBtn.rel = 'noopener noreferrer';
+                wazeBtn.href = wazeHref;
+                wazeBtn.textContent = 'Waze';
+
+                // Also provide Google per-leg using current location as origin
+                var gHref = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=' + encodeURIComponent(to[0] + ',' + to[1]);
+                var gBtn = document.createElement('a');
+                gBtn.className = 'button button--google button--small';
+                gBtn.target = '_blank';
+                gBtn.rel = 'noopener noreferrer';
+                gBtn.href = gHref;
+                gBtn.textContent = 'Google';
+
+                btns.appendChild(gBtn);
+                btns.appendChild(wazeBtn);
+                item.appendChild(text);
+                item.appendChild(btns);
+                legsRoot.appendChild(item);
+            }
+        }
+    })();
+    </script>
 </body>
 </html>
